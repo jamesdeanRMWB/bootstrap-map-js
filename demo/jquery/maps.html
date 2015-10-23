@@ -110,10 +110,14 @@
           function(Map, Scalebar, BootstrapMap) {
             // Get a reference to the ArcGIS Map class
             var map = BootstrapMap.create("mapDiv",{
-              basemap:"dark-gray",
-              center:[-122.45,37.77],
+              basemap:"osm",
+              center:[-111.37,56.72],
               zoom:12
             });
+            
+            var customBasemap = new ArcGISTiledMapServiceLayer(
+             "http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer");
+               map.addLayer(customBasemap);
 
             var scalebar = new Scalebar({
               map: map,

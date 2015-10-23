@@ -17,13 +17,13 @@
     <title>Bootstrap Map JS - Geosearch</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="../css/style.css" rel="stylesheet">
 
     <!-- Bootstrap-map-js -->
-    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.13/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.13/esri/css/esri.css">   
     <link rel="stylesheet" type="text/css" href="../../src/css/bootstrapmap.css">   
     
     <style type="text/css">
@@ -199,9 +199,10 @@
             }]
         };
     </script>
-    <script src="//js.arcgis.com/3.10compact"></script>
+    <script src="http://js.arcgis.com/3.10compact"></script>
     <script>
         require(["esri/map", 
+          "esri/layers/ArcGISTiledMapServiceLayer",
           "esri/dijit/Scalebar",       
           "esri/dijit/Geocoder", 
           "esri/dijit/PopupTemplate", 
@@ -213,14 +214,17 @@
           "dojo/on", 
           "application/bootstrapmap", 
           "dojo/domReady!"], 
-          function(Map, Scalebar, Geocoder, PopupTemplate, Graphic, Multipoint, PictureMarkerSymbol, Popup, dom, on, BootstrapMap) {
+          function(Map, TiledMap, Scalebar, Geocoder, PopupTemplate, Graphic, Multipoint, PictureMarkerSymbol, Popup, dom, on, BootstrapMap) {
 
             // Get a reference to the ArcGIS Map class
             var map = BootstrapMap.create("mapDiv",{ 
-              basemap:"streets",
-              center:[-122.45,37.77],
+              basemap:"satellite",
+              center:[-111.37,56.72],
               zoom:12
             });
+
+            var tiledMap = new TiledMap("http://54.244.117.94/arcgis/rest/services/basemaps/vectorBasemap/MapServer");
+            map.addLayer(tiledMap);
 
             var scalebar = new Scalebar({
               map: map,
@@ -366,6 +370,6 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
   </body>
 </html>
