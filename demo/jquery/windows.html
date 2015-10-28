@@ -233,8 +233,22 @@
               zoom:12
             });
 
+            var addressCache;
+
             var basemapLayer = new TiledMap("http://54.244.117.94/arcgis/rest/services/basemaps/vectorBasemap/MapServer");
             map.addLayer(basemapLayer);
+
+            // civic address feature service
+            // http://gis-portal-dev.elasticbeanstalk.com/arcgis/rest/services/municipalViewer/CivicAddresses/FeatureServer/0
+
+            // https://developers.arcgis.com/javascript/jsapi/querytask-amd.html
+
+            // 1. user types 5 chars i.e. 103 P
+            // 2. we query feature service using a QueryTask object with where: "ADDRESS LIKE '%103 P%'"
+            // 3. get results from query, cache then and add them to typeahead
+            // 3a. user keeps typing and we filter out original results from cache
+            // 3b. user deletes charcter -> clear cache and re-query feature service
+
 
             // Show modal dialog
             $(document).ready(function(){
