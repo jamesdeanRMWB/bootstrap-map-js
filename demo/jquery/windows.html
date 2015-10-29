@@ -211,32 +211,37 @@
 
     <script src="http://js.arcgis.com/3.10compact"></script>
     <script>
-        require(["esri/map", 
-          "esri/layers/ArcGISTiledMapServiceLayer",
-          "esri/dijit/Scalebar",       
-          "esri/dijit/Geocoder", 
-          "esri/dijit/PopupTemplate", 
-          "esri/graphic", 
-          "esri/geometry/Multipoint", 
-          "esri/symbols/PictureMarkerSymbol",
-          "esri/dijit/Popup",
-          "dojo/dom", 
-          "dojo/on", 
-          "application/bootstrapmap", 
-          "dojo/domReady!"], 
-          function(Map, TiledMap, Scalebar, Geocoder, PopupTemplate, Graphic, Multipoint, PictureMarkerSymbol, Popup, dom, on, BootstrapMap) {
+        require([
+          'esri/map', 
+          'esri/layers/ArcGISTiledMapServiceLayer',
+          'esri/tasks/QueryTask',
+          'esri/tasks/query',
+          'dojo/dom', 
+          'dojo/on', 
+          'application/bootstrapmap',
+          'dojo/domReady!'], 
+          function(Map, TiledMap, QueryTask, Query, dom, on, BootstrapMap) {
+            var RMWB_API_HOST = 'http://gis-portal-dev.elasticbeanstalk.com/arcgis/rest/services';
+            var BASEMAP_URL = RMWB_API_HOST + '/basemaps/vectorBasemap/MapServer';
+            var FEATURE_SVC_URL = RMWB_API_HOST + '/municipalViewer/CivicAddresses/FeatureServer/0';
 
             // Get a reference to the ArcGIS Map class
-            var map = BootstrapMap.create("mapDiv",{ 
-              basemap:"satellite",
-              center:[-111.37,56.72],
-              zoom:12
+            var map = BootstrapMap.create('mapDiv',{ 
+              basemap: 'satellite',
+              center: [-111.37,56.72],
+              zoom: 12
             });
 
             var addressCache;
 
-            var basemapLayer = new TiledMap("http://54.244.117.94/arcgis/rest/services/basemaps/vectorBasemap/MapServer");
+            var basemapLayer = new TiledMap(BASEMAP_URL);
             map.addLayer(basemapLayer);
+
+            var queryTask = new QueryTask(FEATURE_SVC_URL);
+            var query = new Query();
+
+            query.outFields = ['ADDRESS'];
+            query.returnGeometry = true;
 
             // civic address feature service
             // http://gis-portal-dev.elasticbeanstalk.com/arcgis/rest/services/municipalViewer/CivicAddresses/FeatureServer/0
@@ -249,18 +254,30 @@
             // 3a. user keeps typing and we filter out original results from cache
             // 3b. user deletes charcter -> clear cache and re-query feature service
 
+            // todo: make sure if exceededTransferLimit is true to call svc again to re-prime cache
 
             // Show modal dialog
             $(document).ready(function(){
               function showModal() {
-                $("#geosearchModal").modal("show");
-                $("#civicAddress").typeahead({ source: ['a', 'aa', 'b', 'bb', 'cc'] });
+                $('#geosearchModal').modal('show');
+                $('#civicAddress').typeahead({ 
+                  source: function (term, process) {
+                    query.where = "ADDRESS LIKE '%" + term + "%'"
+                    queryTask.execute(query, function (featureSet) {
+                      process(featureSet.features);
+                    });
+                  },
+                  minlength: 5,
+                  displayText: function (item) {
+                    return item.attributes.ADDRESS;
+                  }
+                });
               } 
               // Geosearch nav menu is selected
-              $("#geosearchNav").click(function(e){
+              $('#geosearchNav').click(function(e){
                 showModal();
               });
-              $("#geosearchNav2").click(function(e){
+              $('#geosearchNav2').click(function(e){
                 showModal();
               }); 
             });
