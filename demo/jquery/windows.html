@@ -167,7 +167,7 @@
       <div class="jumbotron hidden-xs">
         <div class="row">
           <div class="col-xs-9"><h2>Address Translator</h2>
-            <small>Please enter address or legal descriptions to obtain civic street address or title parcel legal descriptions. 197 Yonge St ----> Plan 123-999999 LOT 2 BLOCK 1.</small>
+            <small>Please enter address or legal descriptions to obtain civic street address or title parcel legal descriptions.  ----> Plan 123-999999 LOT 2 BLOCK 1.</small>
           </div>
           <div class="col-xs-3">
             <button id="geosearchNav" type="button" class="btn btn-primary btn-lg btn-fixed-lg">Show Window</button>
@@ -216,14 +216,21 @@
           'esri/layers/ArcGISTiledMapServiceLayer',
           'esri/tasks/QueryTask',
           'esri/tasks/query',
+          'esri/graphic',
+          'esri/geometry/Point',
+          'esri/symbols/SimpleMarkerSymbol',
+          'esri/tasks/Geoprocessor',
+          'esri/tasks/FeatureSet',
           'dojo/dom', 
           'dojo/on', 
           'application/bootstrapmap',
           'dojo/domReady!'], 
-          function(Map, TiledMap, QueryTask, Query, dom, on, BootstrapMap) {
+          function(Map, TiledMap, QueryTask, Query, Graphic, Point, SimpleMarkerSymbol, Geoprocessor, FeatureSet, dom, on, BootstrapMap) {
             var RMWB_API_HOST = 'http://gis-portal-dev.elasticbeanstalk.com/arcgis/rest/services';
             var BASEMAP_URL = RMWB_API_HOST + '/basemaps/vectorBasemap/MapServer';
-            var FEATURE_SVC_URL = RMWB_API_HOST + '/municipalViewer/CivicAddresses/FeatureServer/0';
+            var FEATURE_SVC_URL = RMWB_API_HOST + '/portalTools/searchAddress/FeatureServer/0';
+            var GP_SVC_URL = 'http://54.189.147.2/server/rest/services/portalTools/civic_to_legal_gptool/GPServer/civic_to_legal_gptool';
+
 
             // Get a reference to the ArcGIS Map class
             var map = BootstrapMap.create('mapDiv',{ 
@@ -239,7 +246,6 @@
 
             var queryTask = new QueryTask(FEATURE_SVC_URL);
             var query = new Query();
-
             query.outFields = ['ADDRESS'];
             query.returnGeometry = true;
 
@@ -262,7 +268,8 @@
                 $('#geosearchModal').modal('show');
                 $('#civicAddress').typeahead({ 
                   source: function (term, process) {
-                    query.where = "ADDRESS LIKE '%" + term + "%'"
+                    query.where = "ADDRESS LIKE '%" + term.toUpperCase() + "%'"
+                    query.outSpatialReference = map.spatialReference;
                     queryTask.execute(query, function (featureSet) {
                       process(featureSet.features);
                     });
@@ -270,6 +277,18 @@
                   minlength: 5,
                   displayText: function (item) {
                     return item.attributes.ADDRESS;
+                  },
+                  afterSelect: function (addressFeature) {
+                    var point = new Point(addressFeature.geometry);
+                    var symbol = new SimpleMarkerSymbol();
+                    var graphic = new Graphic(point, symbol);
+                    map.graphics.add(graphic);
+                    map.centerAndZoom(point, 20); //zoom level
+                    
+                    // var gp = new Geoprocessor(GP_SVC_URL);
+                    // var featureSet = new FeatureSet();
+                    // featureSet.features = [graphic];
+
                   }
                 });
               } 
