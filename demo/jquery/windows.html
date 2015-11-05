@@ -190,6 +190,7 @@
         </div>
 
       </div>
+    </div>
     <script type="text/javascript">
         var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
         var dojoConfig = {
@@ -208,6 +209,7 @@
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/3.1.1/bootstrap3-typeahead.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.12/proj4-src.js"></script>
 
     <script src="http://js.arcgis.com/3.10compact"></script>
     <script>
@@ -219,24 +221,34 @@
           'esri/graphic',
           'esri/geometry/Point',
           'esri/symbols/SimpleMarkerSymbol',
+          'esri/symbols/SimpleFillSymbol',
           'esri/tasks/Geoprocessor',
           'esri/tasks/FeatureSet',
+          'esri/SpatialReference',
           'dojo/dom', 
           'dojo/on', 
           'application/bootstrapmap',
           'dojo/domReady!'], 
-          function(Map, TiledMap, QueryTask, Query, Graphic, Point, SimpleMarkerSymbol, Geoprocessor, FeatureSet, dom, on, BootstrapMap) {
+          function(Map, TiledMap, QueryTask, Query, Graphic, Point, SimpleMarkerSymbol, SimpleFillSymbol, Geoprocessor, FeatureSet, SpatialReference, dom, on, BootstrapMap) {
             var RMWB_API_HOST = 'http://gis-portal-dev.elasticbeanstalk.com/arcgis/rest/services';
             var BASEMAP_URL = RMWB_API_HOST + '/basemaps/vectorBasemap/MapServer';
             var FEATURE_SVC_URL = RMWB_API_HOST + '/portalTools/searchAddress/FeatureServer/0';
             var GP_SVC_URL = 'http://54.189.147.2/server/rest/services/portalTools/civic_to_legal_gptool/GPServer/civic_to_legal_gptool';
 
+            proj4.defs['EPSG:26912'] = "+proj=utm +zone=12 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
+
 
             // Get a reference to the ArcGIS Map class
             var map = BootstrapMap.create('mapDiv',{ 
-              basemap: 'satellite',
+              basemap: '',
               center: [-111.37,56.72],
-              zoom: 12
+              zoom: 12,
+              scrollWheelZoom: true,
+              fadeOnZoom: true,
+              maxZoom: 19,
+              minZoom: 8,
+              logo:false,
+              navigationMode: 'css-transform'
             });
 
             var addressCache;
@@ -281,15 +293,28 @@
                   afterSelect: function (addressFeature) {
                     var point = new Point(addressFeature.geometry);
                     var symbol = new SimpleMarkerSymbol();
-                    var graphic = new Graphic(point, symbol);
+                    var graphic = new Graphic(point, symbol, addressFeature.attributes);
                     map.graphics.add(graphic);
-                    map.centerAndZoom(point, 20); //zoom level
-                    
-                    // var gp = new Geoprocessor(GP_SVC_URL);
-                    // var featureSet = new FeatureSet();
-                    // featureSet.features = [graphic];
+                    map.centerAndZoom(point, 19); //zoom level
 
-                  }
+                    var utmCoords = proj4(proj4('EPSG:3857'), proj4.defs('EPSG:26912'), [point.x, point.y]);
+                    var utmGraphic = new Graphic(new Point(utmCoords, new SpatialReference({ wkid:26912 })));
+
+                    var gp = new Geoprocessor(GP_SVC_URL);
+                    var featureSet = new FeatureSet();
+                    featureSet.features = [utmGraphic];
+
+                    // gp.execute({input_fs: featureSet}, function (results) {
+                    //   var legalGraphic = new Graphic(results[0].value.features[0]);
+                    //   var fillSymbol = new SimpleFillSymbol();
+                    //   legalGraphic.setSymbol(fillSymbol);
+                    //   debugger
+                    //   map.graphics.add(legalGraphic);
+                    // });
+
+
+
+                  } 
                 });
               } 
               // Geosearch nav menu is selected
