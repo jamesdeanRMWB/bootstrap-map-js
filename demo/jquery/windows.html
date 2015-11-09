@@ -14,7 +14,7 @@
         <link rel="apple-touch-icon" href="../images/brand.png">
         <link rel="shortcut icon" href="../images/favicon.ico">
 
-        <title>Bootstrap Map JS - Geosearch</title>
+        <title>RMWB Map - Address to Legal Search Tool</title>
 
         <!-- Bootstrap core CSS -->
         <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
@@ -48,6 +48,10 @@
                 text-align: center;
             }
 
+            .navbar-default {
+                background-color: #F8F8F8;
+            }
+
             .modal-dialog {
                 padding-top: 60px;
             }
@@ -71,11 +75,27 @@
                 overflow: hidden;
             }
 
+            .map .logo-med {
+                display: inline-block;
+                vertical-align: bottom;
+                height: 100px;
+                z-index: 30;
+            }
+
+            .esriControlsBR {
+                position: absolute;
+                right: 5px;
+                bottom: 5px;
+                z-index: 30;
+                text-align: right;
+            }
+
             @media (max-width:767px) {
                 .container.main {
                     padding: 0;
                     margin: 0;
-                }      
+                }
+
                 body {
                     padding-bottom: 40px;
                 }  
@@ -92,19 +112,20 @@
 
     <body>
 
-        <div class="navbar navbar-default">
+        <div class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand">
-                        RMWB Civic Address To Legal
-                    </a>
+                    <a class="navbar-brand" href="http://www.rmwb.ca/" style="color:white"><strong>RMWB </strong></a>
                 </div>
+                    <p class="navbar-text navbar-left"><i>Address to Legal Search Tool</i></p>
+
                 <form class="navbar-form navbar-right" role="search">
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="civicAddress" placeholder="Enter a civic address i.e. 103 Yahoo Dr" data-provide="typeahead">
+                    <div class="form-group has-feedback">
+                        <input type="text" class="form-control" id="civicAddress" placeholder="Enter a civic address i.e. 9909 Franklin Avenue" data-provide="typeahead" style="width:360px"/>
+                        <i class="glyphicon glyphicon-globe form-control-feedback"></i>
+                    </div>
+                    <div class="btn-group">
+                        <button id="civicAddress" type="text" class="form-control civicAddress"> Clear</button>
                     </div>
                 </form>
             </div>
@@ -115,9 +136,12 @@
                 <div class="col-xs-12">
                     <!-- Bootstrap-map-js -->
                     <div id="mapDiv"></div>
+                    <div class="esriControlsBR">
+                        <div class="logo-med"><img src="/src/images/rmwb.png" class="img-responsive" style="height: 100px"></div>
+                    </div>
                 </div>
+  
             </div>
-
         </div>
         <script type="text/javascript">
             var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
