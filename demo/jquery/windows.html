@@ -115,13 +115,13 @@
         <div class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="http://www.rmwb.ca/" style="color:white"><strong>RMWB </strong></a>
+                    <a class="navbar-brand" href="http://www.rmwb.ca/" style="color:white" target="_blank"><strong>RMWB </strong></a>
                 </div>
                     <p class="navbar-text navbar-left"><i>Address to Legal Search Tool</i></p>
 
                 <form class="navbar-form navbar-right" role="search">
                     <div class="form-group has-feedback">
-                        <input type="text" class="form-control" id="civicAddress" placeholder="Enter a civic address i.e. 9909 Franklin Avenue" data-provide="typeahead" style="width:360px"/>
+                        <input type="text" class="form-control" id="civicAddress" placeholder="Enter a civic address i.e. 9909 Franklin Avenue" data-provide="typeahead" style="width:360px" autocomplete="off"/>
                         <i class="glyphicon glyphicon-globe form-control-feedback"></i>
                     </div>
                     <div class="btn-group">
@@ -136,11 +136,11 @@
                 <div class="col-xs-12">
                     <!-- Bootstrap-map-js -->
                     <div id="mapDiv"></div>
+                    <!-- RMWB Logo -->
                     <div class="esriControlsBR">
-                        <div class="logo-med"><img src="/src/images/rmwb.png" class="img-responsive" style="height: 100px"></div>
+                        <div class="logo-med"><img src="/src/images/rmwb.png" class="img-responsive" style="height: 100px"/></div>
                     </div>
                 </div>
-  
             </div>
         </div>
         <script type="text/javascript">
@@ -177,11 +177,12 @@
                 'esri/tasks/Geoprocessor',
                 'esri/tasks/FeatureSet',
                 'esri/SpatialReference',
+                'esri/dijit/PopupTemplate', 
                 'dojo/dom', 
                 'dojo/on', 
                 'application/bootstrapmap',
                 'dojo/domReady!'], 
-                function(Map, TiledMap, QueryTask, Query, Graphic, Point, SimpleMarkerSymbol, SimpleFillSymbol, Geoprocessor, FeatureSet, SpatialReference, dom, on, BootstrapMap) {
+                function(Map, TiledMap, QueryTask, Query, Graphic, Point, SimpleMarkerSymbol, SimpleFillSymbol, Geoprocessor, FeatureSet, SpatialReference, PopupTemplate, dom, on, BootstrapMap) {
                     var RMWB_API_HOST = 'http://gis-portal-dev.elasticbeanstalk.com/arcgis/rest/services';
                     var BASEMAP_URL = RMWB_API_HOST + '/basemaps/vectorBasemap/MapServer';
                     var FEATURE_SVC_URL = RMWB_API_HOST + '/portalTools/searchAddress/FeatureServer/0';
@@ -202,6 +203,7 @@
                         logo:false,
                         navigationMode: 'css-transform'
                     });
+                    
 
                     var addressCache;
 
@@ -223,7 +225,6 @@
                                     process(featureSet.features);
                                 });
                             },
-                            minlength: 5,
                             displayText: function (item) {
                                 return item.attributes.ADDRESS;
                             },
@@ -244,7 +245,10 @@
                                 featureSet.features = [utmGraphic];
 
                                 gp.execute({input_fs: featureSet}, function (results) {
-                                    var legalGraphic = new Graphic(results[0].value.features[0].geometry, new SimpleFillSymbol());
+                                    var legalFeature = results[0].value.features[0]
+                                    var popupTemplate = new PopupTemplate({title: 'LEGAL DESCRIPTION', description: "{LEGAL}"});
+
+                                    var legalGraphic = new Graphic(legalFeature.geometry, new SimpleFillSymbol(), legalFeature.attributes, popupTemplate);
 
                                     var utmPoints = legalGraphic.geometry.rings[0];
                                     var wmPoints = utmPoints.map(proj.inverse);

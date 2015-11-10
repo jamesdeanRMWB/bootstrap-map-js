@@ -3,10 +3,38 @@
 	{
 		"selected_items":
 		[
+			[
+				"popupTe",
+				"popupTemplate"
+			],
+			[
+				"pop",
+				"popupTemplate"
+			],
+			[
+				"info",
+				"infoTemplate"
+			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "demo/jquery/windows.html",
+			"settings":
+			{
+				"buffer_size": 11251,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "\n\n- js\n- css\n- images\n- index.html",
+			"settings":
+			{
+				"buffer_size": 34,
+				"line_ending": "Windows"
+			}
+		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -32,6 +60,10 @@
 	},
 	"file_history":
 	[
+		"/C/Users/deanj/AppData/Local/Temp/Rar$EXa0.814/widgets/Search/setting/QuerySourceSetting.html",
+		"/C/Users/deanj/Desktop/index (1).html",
+		"/C/Users/deanj/AppData/Local/Temp/Rar$DRa0.773/widgets/Search/Widget.js",
+		"/C/Users/deanj/Desktop/config.json",
 		"/C/Users/deanj/Documents/conFusion/index.html",
 		"/C/Users/deanj/Documents/conFusion/css/mystyles.css",
 		"/C/Users/deanj/Documents/GitHub/bootstrap-map-js/demo/jquery/windows.html",
@@ -69,6 +101,10 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"popupTemplate",
+			"PopupTemplate",
+			"infoTemplate",
+			"InfoTemplate",
 			".png",
 			"button",
 			"miles",
@@ -93,8 +129,63 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "demo/jquery/windows.html",
+					"settings":
+					{
+						"buffer_size": 11251,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11076,
+								11076
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4250.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"settings":
+					{
+						"buffer_size": 34,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								34,
+								34
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],
